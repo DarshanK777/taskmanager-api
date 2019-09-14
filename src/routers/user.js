@@ -124,7 +124,7 @@ const upload = multer({
 })
 
 // route for avataar upload and error message handling
-routers.post('/user/me/avatar', auth, upload.single('avatar'),async (req, res)=>{
+router.post('/user/me/avatar', auth, upload.single('avatar'),async (req, res)=>{
     const buffer = await sharp(req.file.buffer).resize({ 
         width: 250,
         height: 250
@@ -143,7 +143,7 @@ routers.post('/user/me/avatar', auth, upload.single('avatar'),async (req, res)=>
 })
 
 //delete avatar image
-routers.delete('/user/me/avatar', auth, async (req, res)=>{
+router.delete('/user/me/avatar', auth, async (req, res)=>{
     req.user.avatar = undefined
     await req.user.save()
     res.send()
