@@ -21,7 +21,12 @@ router.post('/users',async (req, res)=>{
 
 // read users
 router.get('/users/me', auth ,async (req, res)=>{
-    res.send(req.user)
+    try {
+        res.send(req.user)
+    } catch (error) {
+        res.send(error)
+    }
+    
 })
 
 // read user by id
@@ -125,28 +130,36 @@ const upload = multer({
 
 // route for avataar upload and error message handling
 router.post('/user/me/avatar', auth, upload.single('avatar'),async (req, res)=>{
-    const buffer = await sharp(req.file.buffer).resize({ 
-        width: 250,
-        height: 250
-    }).png().toBuffer()
-
-    // above sharp npm module is used
-    // resize does what it says
-    //.png() >> converts img to png format
-    //.toBuffer() .. makes it accessible to in buffer format
-
-    req.user.avatar = buffer // assigning to users avatar 
-    await req.user.save()   // saving users avatar
-    res.send()
+    try{
+        const buffer = await sharp(req.file.buffer).resize({ 
+            width: 250,
+            height: 250
+        }).png().toBuffer()
+    
+        // above sharp npm module is used
+        // resize does what it says
+        //.png() >> converts img to png format
+        //.toBuffer() .. makes it accessible to in buffer format
+    
+        req.user.avatar = buffer // assigning to users avatar 
+        await req.user.save()   // saving users avatar
+        res.send()
+    }catch(e){
+        res.send(e)
+    }
 },(error, req, res, next)=>{  // all 4 parameters are needed to tell express this function is used for error message handling
     res.status(400).send({error: error.message})
 })
 
 //delete avatar image
 router.delete('/user/me/avatar', auth, async (req, res)=>{
+   try{
     req.user.avatar = undefined
     await req.user.save()
     res.send()
+   }catch(e){
+       res.send(e)
+   }
 })
 
 // get user avatar by id
